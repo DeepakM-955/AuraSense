@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AuraSense — Your personalized health dashboard for real-time vitals monitoring.">
+    <title>AuraSense — Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💙</text></svg>">
+</head>
+
+<body>
+
+    <!-- ── Animated Background ── -->
+    <div class="bg-scene"></div>
+
+    <!-- ── Top Bar ── -->
+    <nav class="topbar">
+        <div class="topbar-logo">
+            <img src="assets/logo-placeholder.svg" alt="AuraSense Logo" onerror="this.style.display='none'">
+            <span class="brand">AURASENSE</span>
+        </div>
+        <div class="topbar-center">Health Monitoring Dashboard</div>
+        <div class="topbar-actions">
+            <button class="profile-btn" id="profile-btn" title="My Profile">
+                <span id="profile-btn-initial">U</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ── Dashboard Content ── -->
+    <div class="dashboard-wrapper">
+        <div class="dashboard-content">
+
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <h1>Welcome, <span class="name-highlight" id="welcome-name">User</span>!</h1>
+                <p>Your real-time health overview powered by AuraSense IoT</p>
+            </section>
+
+            <!-- Vitals Grid -->
+            <div class="vitals-grid">
+                <!-- Heart Rate -->
+                <div class="vital-card glass-card">
+                    <div class="card-icon-wrap heart">❤️</div>
+                    <div class="card-value" id="vital-heart">--</div>
+                    <div class="card-label">Heart Rate</div>
+                    <span class="card-status normal">Normal</span>
+                </div>
+
+                <!-- SpO2 -->
+                <div class="vital-card glass-card">
+                    <div class="card-icon-wrap oxygen">🫁</div>
+                    <div class="card-value" id="vital-spo2">--</div>
+                    <div class="card-label">SpO₂ Level</div>
+                    <span class="card-status normal">Normal</span>
+                </div>
+
+                <!-- Temperature -->
+                <div class="vital-card glass-card">
+                    <div class="card-icon-wrap temp">🌡️</div>
+                    <div class="card-value" id="vital-temp">--</div>
+                    <div class="card-label">Temperature</div>
+                    <span class="card-status normal">Normal</span>
+                </div>
+
+                <!-- Location -->
+                <div class="vital-card glass-card">
+                    <div class="card-icon-wrap bp">📍</div>
+                    <div class="card-value" id="vital-location" style="font-size: 1.2rem;">--</div>
+                    <div class="card-label">Location</div>
+                    <a id="vital-map-link" href="#" target="_blank" rel="noopener"
+                        style="display: none; margin-top: 8px; font-size: 0.78rem; color: var(--color-accent); text-decoration: none; font-weight: 600;">
+                        🗺️ Open Map
+                    </a>
+                    <span class="card-status normal" id="vital-location-status">--</span>
+                </div>
+            </div>
+
+            <!-- Check Your Vitals CTA -->
+            <div class="vitals-cta">
+                <button class="btn btn-vitals" id="btn-check-vitals" onclick="startVitalMonitoring()">
+                    ⚡ Check Your Vitals
+                </button>
+                <p class="mt-2" id="vitals-cta-hint" style="color: var(--color-text-muted); font-size: 0.85rem;">
+                    Connect your AuraSense device for real-time monitoring
+                </p>
+                <!-- Live monitoring indicator -->
+                <div id="live-monitor-status"
+                    style="display: none; margin-top: 12px; display: none;
+                    align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; color: var(--color-teal);">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-teal);
+                        display: inline-block; animation: pulseGlow 1.5s ease-in-out infinite;"></span>
+                    Live Monitoring Active
+                </div>
+            </div>
+
+            <!-- Call a Doctor Section -->
+            <div class="call-doctor-section" id="call-doctor-section">
+                <div class="call-doctor-divider">
+                    <span>Need Immediate Assistance?</span>
+                </div>
+                <button class="btn btn-call-doctor" id="btn-call-doctor">
+                    <span class="call-doctor-icon">🩺</span>
+                    <span class="call-doctor-text">Call a Doctor</span>
+                    <span class="call-doctor-pulse"></span>
+                </button>
+                <p class="call-doctor-hint">Connect with an available doctor in real-time</p>
+
+                <!-- Status Banner -->
+                <div class="call-status" id="call-status" style="display:none;">
+                    <div class="call-status-inner">
+                        <span class="call-status-icon" id="call-status-icon">⏳</span>
+                        <span class="call-status-text" id="call-status-text">Please wait, connecting you to an available
+                            doctor…</span>
+                    </div>
+                    <button class="btn btn-cancel-call" id="btn-cancel-call" style="display:none;">✕ Cancel
+                        Request</button>
+                </div>
+            </div>
+
+            <!-- ── Book an Appointment Section ── -->
+            <div class="call-doctor-section" id="appointment-section" style="margin-top: 40px;">
+                <div class="call-doctor-divider">
+                    <span>📅 Book an Appointment</span>
+                </div>
+
+                <div class="glass-card" style="padding: 28px; max-width: 600px; margin: 0 auto; text-align: left;">
+                    <div id="appointment-alert" class="alert"></div>
+                    <form id="appointment-form" onsubmit="bookAppointment(event)">
+                        <div class="form-group">
+                            <label for="appt-specialization">Specialization / Domain</label>
+                            <div class="input-wrapper">
+                                <select id="appt-specialization" required>
+                                    <option value="" disabled selected>Select specialization</option>
+                                    <option value="General Physician">General Physician</option>
+                                    <option value="ENT">ENT</option>
+                                    <option value="Dentist">Dentist</option>
+                                    <option value="Cardiologist">Cardiologist</option>
+                                    <option value="Dermatologist">Dermatologist</option>
+                                    <option value="Neurologist">Neurologist</option>
+                                    <option value="Orthopedic">Orthopedic</option>
+                                    <option value="Pediatrician">Pediatrician</option>
+                                    <option value="Psychiatrist">Psychiatrist</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span class="input-icon">🏥</span>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label for="appt-date">Date</label>
+                                <div class="input-wrapper">
+                                    <input type="date" id="appt-date" required style="color-scheme: dark;">
+                                    <span class="input-icon">📅</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="appt-time">Time</label>
+                                <div class="input-wrapper">
+                                    <input type="time" id="appt-time" required style="color-scheme: dark;">
+                                    <span class="input-icon">🕐</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="appt-purpose">Purpose</label>
+                            <div class="input-wrapper">
+                                <textarea id="appt-purpose" rows="2"
+                                    placeholder="Describe the reason for your appointment..." required style="
+                                    width: 100%; padding: 13px 16px;
+                                    background: rgba(255, 255, 255, 0.04);
+                                    border: 1px solid var(--color-border);
+                                    border-radius: var(--radius-md);
+                                    color: var(--color-text); font-size: 0.95rem;
+                                    outline: none; resize: vertical;
+                                    font-family: var(--font-body);
+                                    transition: all var(--transition-fast);
+                                "></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="margin-top: 8px;">📅 Book
+                            Appointment</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ── My Appointments Tracker ── -->
+            <div class="call-doctor-section" style="margin-top: 40px;">
+                <div class="call-doctor-divider">
+                    <span>📋 My Appointments</span>
+                </div>
+                <div id="my-appointments-container" style="max-width: 700px; margin: 0 auto;">
+                    <div id="no-appointments"
+                        style="text-align: center; color: var(--color-text-muted); padding: 24px; font-size: 0.95rem;">
+                        No appointments booked yet.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Consultation Invitation Notification ── -->
+    <div id="consult-notification" style="display: none; position: fixed; bottom: 24px; right: 24px; z-index: 999;
+        max-width: 380px; width: 90%; animation: fadeSlideUp 0.4s ease-out;">
+        <div class="glass-card" style="padding: 24px; border-color: var(--color-teal); border-width: 1.5px;">
+            <!-- Pulse ring -->
+            <div style="position: absolute; top: 16px; right: 16px; width: 10px; height: 10px;
+                border-radius: 50%; background: var(--color-teal); animation: pulseGlow 2s ease-in-out infinite;">
+            </div>
+
+            <div style="font-size: 1.5rem; margin-bottom: 8px;">🩺</div>
+            <div style="font-size: 1rem; font-weight: 700; color: var(--color-text-heading); margin-bottom: 4px;"
+                id="consult-notif-title">Consultation Invitation</div>
+            <div style="font-size: 0.88rem; color: var(--color-text-muted); margin-bottom: 6px;"
+                id="consult-notif-doctor"></div>
+            <div style="font-size: 0.9rem; color: var(--color-text); margin-bottom: 16px;" id="consult-notif-message">
+            </div>
+            <button class="btn btn-save" id="consult-notif-join"
+                style="width: 100%; padding: 12px 24px; margin-bottom: 8px;" onclick="joinMeeting()">🎥 Join
+                Meeting</button>
+            <button class="btn" id="consult-notif-dismiss"
+                style="width: 100%; padding: 8px 16px; background: rgba(255,255,255,0.06); border: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 0.82rem;"
+                onclick="dismissInvite()">Dismiss</button>
+        </div>
+    </div>
+
+    <!-- ── Profile Overlay ── -->
+    <div class="profile-overlay" id="profile-overlay"></div>
+
+    <!-- ── Profile Side Panel ── -->
+    <div class="profile-panel" id="profile-panel">
+        <div class="profile-panel-header">
+            <h2>My Profile</h2>
+            <button class="profile-close" id="profile-close">✕</button>
+        </div>
+
+        <!-- Avatar -->
+        <div class="profile-avatar-section">
+            <div class="profile-avatar" id="profile-avatar-icon">U</div>
+            <p class="profile-email" id="profile-email">user@email.com</p>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="profile-section-title">Personal Details</div>
+
+        <div class="form-group">
+            <label for="profile-name">Full Name</label>
+            <div class="input-wrapper">
+                <input type="text" id="profile-name" placeholder="Your name">
+                <span class="input-icon">👤</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+                <label for="profile-age">Age</label>
+                <div class="input-wrapper">
+                    <input type="number" id="profile-age" placeholder="25" min="1" max="150">
+                    <span class="input-icon">📅</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="profile-gender">Gender</label>
+                <div class="input-wrapper">
+                    <select id="profile-gender">
+                        <option value="" disabled selected>Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span class="input-icon">⚥</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Information -->
+        <div class="profile-section-title">Medical Information</div>
+
+        <div class="form-group">
+            <label for="profile-medical">Notes & Conditions</label>
+            <div class="input-wrapper">
+                <textarea id="profile-medical" rows="3" placeholder="Allergies, conditions, medications..." style="
+          width: 100%;
+          padding: 13px 16px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          color: var(--color-text);
+          font-size: 0.95rem;
+          outline: none;
+          resize: vertical;
+          font-family: var(--font-body);
+          transition: all var(--transition-fast);
+        "></textarea>
+            </div>
+        </div>
+
+        <!-- Guardian Information -->
+        <div class="profile-section-title">Guardian Information</div>
+
+        <div class="form-group">
+            <label for="profile-guardian-name">Guardian Name</label>
+            <div class="input-wrapper">
+                <input type="text" id="profile-guardian-name" placeholder="Not provided" readonly>
+                <span class="input-icon">🛡️</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+                <label for="profile-guardian-phone">Guardian Phone</label>
+                <div class="input-wrapper">
+                    <input type="tel" id="profile-guardian-phone" placeholder="Not provided" readonly>
+                    <span class="input-icon">📞</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="profile-guardian-email">Guardian Email</label>
+                <div class="input-wrapper">
+                    <input type="email" id="profile-guardian-email" placeholder="Not provided" readonly>
+                    <span class="input-icon">📧</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="profile-actions">
+            <button class="btn btn-save" id="profile-save">💾 Save Profile</button>
+            <button class="btn btn-logout" id="logout-btn">🚪 Logout</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/appointments.js"></script>
+    <script src="js/call-doctor.js"></script>
+</body>
+
+</html>

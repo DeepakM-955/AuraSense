@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AuraSense — Smart IoT-Driven Healthcare Monitoring. Select your role to continue.">
+    <title>AuraSense — Welcome</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💙</text></svg>">
+</head>
+
+<body>
+
+    <!-- ── Animated Background Scene ── -->
+    <div class="bg-scene">
+        <!-- Floating particles -->
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+
+        <!-- ECG Heartbeat Line -->
+        <div class="ecg-container">
+            <svg class="ecg-line" viewBox="0 0 2400 120" preserveAspectRatio="none">
+                <path
+                    d="M0,60 L80,60 L100,60 L120,20 L140,100 L160,40 L180,80 L200,60 L300,60 L320,60 L340,20 L360,100 L380,40 L400,80 L420,60 L520,60 L540,60 L560,20 L580,100 L600,40 L620,80 L640,60 L740,60 L760,60 L780,20 L800,100 L820,40 L840,80 L860,60 L960,60 L980,60 L1000,20 L1020,100 L1040,40 L1060,80 L1080,60 L1180,60 L1200,60 L1220,20 L1240,100 L1260,40 L1280,80 L1300,60 L1400,60 L1420,60 L1440,20 L1460,100 L1480,40 L1500,80 L1520,60 L1620,60 L1640,60 L1660,20 L1680,100 L1700,40 L1720,80 L1740,60 L1840,60 L1860,60 L1880,20 L1900,100 L1920,40 L1940,80 L1960,60 L2060,60 L2080,60 L2100,20 L2120,100 L2140,40 L2160,80 L2180,60 L2280,60 L2300,60 L2320,20 L2340,100 L2360,40 L2380,80 L2400,60" />
+            </svg>
+        </div>
+
+        <!-- DNA Helix decoration -->
+        <div class="dna-strand dna-strand-1"></div>
+        <div class="dna-strand dna-strand-2"></div>
+    </div>
+
+    <!-- ── Top Bar ── -->
+    <nav class="topbar" style="background: transparent; border-bottom: none; backdrop-filter: none;">
+        <div class="topbar-logo">
+            <img src="assets/logo-placeholder.svg" alt="AuraSense Logo" onerror="this.style.display='none'">
+            <span class="brand">AURASENSE</span>
+        </div>
+    </nav>
+
+    <!-- ── Role Selection Content ── -->
+    <div class="landing-wrapper">
+        <div class="landing-content">
+            <!-- Tagline -->
+            <div class="landing-tagline">
+                <span class="tagline-badge">🔬 Smart Healthcare Platform</span>
+            </div>
+
+            <!-- Main Question -->
+            <h1 class="landing-title">Who are you?</h1>
+            <p class="landing-subtitle">Select your role to access your personalized AuraSense portal</p>
+
+            <!-- Role Cards -->
+            <div class="role-cards">
+                <!-- Doctor Card -->
+                <a href="doctor-login.html" class="role-card role-card-doctor" id="role-doctor">
+                    <div class="role-card-glow"></div>
+                    <div class="role-icon-wrap">
+                        <span class="role-icon">🩺</span>
+                        <div class="role-icon-ring"></div>
+                    </div>
+                    <h2 class="role-title">Doctor</h2>
+                    <p class="role-desc">Access patient monitoring, receive real-time alerts & manage consultations</p>
+                    <div class="role-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- Patient Card -->
+                <a href="patient-login.html" class="role-card role-card-patient" id="role-patient">
+                    <div class="role-card-glow"></div>
+                    <div class="role-icon-wrap">
+                        <span class="role-icon">👤</span>
+                        <div class="role-icon-ring"></div>
+                    </div>
+                    <h2 class="role-title">Patient</h2>
+                    <p class="role-desc">Monitor your vitals, upload reports & connect with healthcare professionals</p>
+                    <div class="role-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Footer -->
+            <div class="landing-footer">
+                <p>Powered by <strong>AuraSense IoT</strong> — Real-time health intelligence</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

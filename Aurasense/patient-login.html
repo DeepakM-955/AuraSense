@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AuraSense — Smart IoT-Driven Healthcare Monitoring. Login to your account.">
+    <title>AuraSense — Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💙</text></svg>">
+</head>
+
+<body>
+
+    <!-- ── Animated Background Scene ── -->
+    <div class="bg-scene">
+        <!-- Floating particles -->
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+
+        <!-- ECG Heartbeat Line -->
+        <div class="ecg-container">
+            <svg class="ecg-line" viewBox="0 0 2400 120" preserveAspectRatio="none">
+                <path
+                    d="M0,60 L80,60 L100,60 L120,20 L140,100 L160,40 L180,80 L200,60 L300,60 L320,60 L340,20 L360,100 L380,40 L400,80 L420,60 L520,60 L540,60 L560,20 L580,100 L600,40 L620,80 L640,60 L740,60 L760,60 L780,20 L800,100 L820,40 L840,80 L860,60 L960,60 L980,60 L1000,20 L1020,100 L1040,40 L1060,80 L1080,60 L1180,60 L1200,60 L1220,20 L1240,100 L1260,40 L1280,80 L1300,60 L1400,60 L1420,60 L1440,20 L1460,100 L1480,40 L1500,80 L1520,60 L1620,60 L1640,60 L1660,20 L1680,100 L1700,40 L1720,80 L1740,60 L1840,60 L1860,60 L1880,20 L1900,100 L1920,40 L1940,80 L1960,60 L2060,60 L2080,60 L2100,20 L2120,100 L2140,40 L2160,80 L2180,60 L2280,60 L2300,60 L2320,20 L2340,100 L2360,40 L2380,80 L2400,60" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- ── Top Bar ── -->
+    <nav class="topbar" style="background: transparent; border-bottom: none; backdrop-filter: none;">
+        <div class="topbar-logo">
+            <img src="assets/logo-placeholder.svg" alt="AuraSense Logo" onerror="this.style.display='none'">
+            <span class="brand">AURASENSE</span>
+        </div>
+    </nav>
+
+    <!-- ── Login Card ── -->
+    <div class="auth-wrapper">
+        <div class="auth-card glass-card">
+            <div class="card-icon">🩺</div>
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Sign in to your AuraSense account</p>
+
+            <div id="login-alert" class="alert"></div>
+
+            <form id="login-form" onsubmit="loginWithEmail(event)">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="login-email" placeholder="you@example.com" required
+                            autocomplete="email">
+                        <span class="input-icon">✉</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="login-password" placeholder="••••••••" required
+                            autocomplete="current-password">
+                        <span class="input-icon">🔒</span>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-top: -12px; margin-bottom: 16px;">
+                    <a href="forgot-password.html" style="font-size: 0.85rem;">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+
+            <div class="divider"><span>or</span></div>
+
+            <button class="btn btn-google" onclick="signInWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Sign in with Google
+            </button>
+
+            <div class="auth-footer">
+                New User? <a href="signup.html">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (v9 compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Redirect to dashboard if already logged in
+        redirectIfLoggedIn();
+    </script>
+</body>
+
+</html>

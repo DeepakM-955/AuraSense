@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0077b6"/>
+      <stop offset="100%" style="stop-color:#00b4d8"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="200" height="200" rx="40" fill="#0a1628"/>
+  <!-- Heart shape -->
+  <path d="M100 160 C60 130, 20 100, 40 65 C55 40, 85 45, 100 70 C115 45, 145 40, 160 65 C180 100, 140 130, 100 160Z" fill="url(#grad)" opacity="0.3"/>
+  <!-- Pulse line -->
+  <polyline points="25,105 60,105 75,105 85,75 95,135 105,65 115,120 125,95 140,105 175,105" fill="none" stroke="url(#grad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  <!-- Inner circle accent -->
+  <circle cx="100" cy="100" r="60" fill="none" stroke="#00b4d8" stroke-width="1" opacity="0.2"/>
+</svg>

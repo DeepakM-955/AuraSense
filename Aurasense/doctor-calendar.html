@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AuraSense — Doctor Appointment Calendar. View and manage your accepted appointments.">
+    <title>AuraSense — Appointment Calendar</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💙</text></svg>">
+    <style>
+        /* ── Calendar Styles (matches existing theme) ── */
+        .calendar-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-text-heading);
+            margin: 0;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .calendar-nav button {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--color-accent);
+        }
+
+        .calendar-today-btn {
+            background: rgba(0, 201, 167, 0.1) !important;
+            border-color: var(--color-teal) !important;
+            color: var(--color-teal) !important;
+            width: auto !important;
+            padding: 0 16px !important;
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-day-label {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 0;
+        }
+
+        .calendar-cell {
+            min-height: 90px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 6px;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .calendar-cell:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--color-border);
+        }
+
+        .calendar-cell.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-cell.today {
+            border-color: var(--color-teal);
+            background: rgba(0, 201, 167, 0.06);
+        }
+
+        .calendar-date {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: 4px;
+        }
+
+        .calendar-cell.today .calendar-date {
+            color: var(--color-teal);
+        }
+
+        .calendar-event {
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            margin-bottom: 3px;
+            border-radius: 4px;
+            background: rgba(0, 201, 167, 0.15);
+            color: var(--color-teal);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border-left: 2px solid var(--color-teal);
+        }
+
+        .calendar-event:hover {
+            background: rgba(0, 201, 167, 0.25);
+        }
+
+        .calendar-more {
+            font-size: 0.68rem;
+            color: var(--color-accent);
+            padding: 2px 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* ── Detail Modal ── */
+        .cal-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cal-modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .cal-modal {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(20px) scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .cal-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cal-modal-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--color-text-heading);
+            margin: 0;
+        }
+
+        .cal-modal-close {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .cal-modal-close:hover {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--color-error);
+        }
+
+        .cal-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cal-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .cal-detail-label {
+            font-size: 0.82rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+        }
+
+        .cal-detail-value {
+            font-size: 0.9rem;
+            color: var(--color-text);
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .cal-detail-purpose {
+            margin-top: 16px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+        }
+
+        .cal-detail-purpose .cal-detail-label {
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .cal-detail-purpose .cal-detail-value {
+            text-align: left;
+            max-width: 100%;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        /* ── Day Detail Popup (click on date) ── */
+        .cal-day-events {
+            margin-top: 16px;
+        }
+
+        .cal-day-event-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .cal-day-event-card:hover {
+            background: rgba(0, 201, 167, 0.08);
+            border-color: var(--color-teal);
+        }
+
+        .cal-day-event-time {
+            font-size: 0.78rem;
+            color: var(--color-teal);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .cal-day-event-name {
+            font-size: 0.92rem;
+            color: var(--color-text-heading);
+            font-weight: 600;
+        }
+
+        .cal-day-event-purpose {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 4px;
+        }
+
+        /* Summary stats */
+        .calendar-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .cal-stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .cal-stat-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--color-teal);
+        }
+
+        .cal-stat-label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Back link */
+        .cal-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.88rem;
+            color: var(--color-text-muted);
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: color var(--transition-fast);
+        }
+
+        .cal-back-link:hover {
+            color: var(--color-accent);
+        }
+
+        @media (max-width: 768px) {
+            .calendar-cell {
+                min-height: 60px;
+                padding: 4px;
+            }
+
+            .calendar-event {
+                font-size: 0.6rem;
+                padding: 2px 4px;
+            }
+
+            .calendar-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .cal-modal {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── Animated Background ── -->
+    <div class="bg-scene"></div>
+
+    <!-- ── Top Bar ── -->
+    <nav class="topbar">
+        <div class="topbar-logo">
+            <img src="assets/logo-placeholder.svg" alt="AuraSense Logo" onerror="this.style.display='none'">
+            <span class="brand">AURASENSE</span>
+        </div>
+        <div class="topbar-center">Appointment Calendar</div>
+        <div class="topbar-actions">
+            <button class="btn btn-logout-sm" id="doctor-logout-btn" title="Sign Out">🚪</button>
+        </div>
+    </nav>
+
+    <!-- ── Calendar Content ── -->
+    <div class="dashboard-wrapper">
+        <div class="dashboard-content">
+
+            <a href="doctor-dashboard.html" class="cal-back-link">← Back to Dashboard</a>
+
+            <!-- Stats -->
+            <div class="calendar-stats">
+                <div class="cal-stat-card glass-card">
+                    <div class="cal-stat-value" id="stat-this-month">0</div>
+                    <div class="cal-stat-label">This Month</div>
+                </div>
+                <div class="cal-stat-card glass-card">
+                    <div class="cal-stat-value" id="stat-this-week">0</div>
+                    <div class="cal-stat-label">This Week</div>
+                </div>
+                <div class="cal-stat-card glass-card">
+                    <div class="cal-stat-value" id="stat-today">0</div>
+                    <div class="cal-stat-label">Today</div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="glass-card" style="padding: 24px;">
+                <div class="calendar-wrapper">
+                    <div class="calendar-header">
+                        <h2 id="calendar-month-label">February 2026</h2>
+                        <div class="calendar-nav">
+                            <button onclick="navigateMonth(-1)" title="Previous Month">‹</button>
+                            <button class="calendar-today-btn" onclick="goToToday()">Today</button>
+                            <button onclick="navigateMonth(1)" title="Next Month">›</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Appointment Detail Modal ── -->
+    <div class="cal-modal-overlay" id="cal-modal-overlay">
+        <div class="cal-modal glass-card" id="cal-modal">
+            <div class="cal-modal-header">
+                <h3 id="cal-modal-title">Appointment Details</h3>
+                <button class="cal-modal-close" onclick="closeCalModal()">✕</button>
+            </div>
+            <div id="cal-modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/doctor-auth.js"></script>
+    <script src="js/doctor-calendar.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AuraSense — Live Patient Vitals. Real-time monitoring of patient health data.">
+    <title>AuraSense — Live Patient Vitals</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💙</text></svg>">
+    <style>
+        /* ── Live Vitals Page Styles ── */
+        .live-vitals-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .live-vitals-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .live-vitals-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-text-heading);
+        }
+
+        .live-vitals-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .live-vitals-back:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-text);
+        }
+
+        .patient-info-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .patient-info-bar .patient-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--color-text-heading);
+        }
+
+        .patient-info-bar .patient-id {
+            font-size: 0.82rem;
+            color: var(--color-text-muted);
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(0, 201, 167, 0.12);
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--color-teal);
+            margin-left: auto;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-teal);
+            animation: pulseGlow 1.5s ease-in-out infinite;
+        }
+
+        .vitals-grid-live {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .vital-card-live {
+            padding: 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .vital-card-live .card-icon-wrap {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 14px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .vital-card-live .card-icon-wrap.heart {
+            background: rgba(255, 107, 107, 0.15);
+        }
+
+        .vital-card-live .card-icon-wrap.oxygen {
+            background: rgba(54, 162, 235, 0.15);
+        }
+
+        .vital-card-live .card-icon-wrap.temp {
+            background: rgba(255, 193, 7, 0.15);
+        }
+
+        .vital-card-live .card-icon-wrap.location {
+            background: rgba(156, 39, 176, 0.15);
+        }
+
+        .vital-card-live .card-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-text-heading);
+            margin-bottom: 6px;
+        }
+
+        .vital-card-live .card-label {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 10px;
+        }
+
+        .vital-card-live .card-status {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .vital-card-live .card-status.normal {
+            background: rgba(0, 201, 167, 0.15);
+            color: var(--color-teal);
+        }
+
+        .vital-card-live .card-status.warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: var(--color-warning);
+        }
+
+        .vital-card-live .card-status.critical {
+            background: rgba(255, 107, 107, 0.15);
+            color: var(--color-error);
+        }
+
+        .alert-banner {
+            display: none;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .alert-banner.active {
+            display: block;
+        }
+
+        .alert-banner.normal {
+            background: rgba(0, 201, 167, 0.12);
+            border: 1px solid rgba(0, 201, 167, 0.3);
+            color: var(--color-teal);
+        }
+
+        .alert-banner.warning {
+            background: rgba(255, 193, 7, 0.12);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: var(--color-warning);
+        }
+
+        .alert-banner.critical {
+            background: rgba(255, 107, 107, 0.12);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: var(--color-error);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .map-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 6px 14px;
+            background: rgba(156, 39, 176, 0.15);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-radius: var(--radius-md);
+            color: #ce93d8;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .map-link-btn:hover {
+            background: rgba(156, 39, 176, 0.25);
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .toast {
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 0.9rem;
+            animation: fadeSlideUp 0.3s ease-out;
+            margin-top: 8px;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, var(--color-teal), #00b894);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, var(--color-error), #c0392b);
+        }
+
+        @media (max-width: 600px) {
+            .vitals-grid-live {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+            }
+
+            .vital-card-live .card-value {
+                font-size: 1.4rem;
+            }
+
+            .live-vitals-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-bg">
+        <div class="container" style="padding-top: 30px;">
+            <div class="live-vitals-wrapper">
+
+                <!-- Header -->
+                <div class="live-vitals-header">
+                    <h2>📊 Live Patient Vitals</h2>
+                    <a href="doctor-calendar.html" class="live-vitals-back">← Back to Calendar</a>
+                </div>
+
+                <!-- Patient Info Bar -->
+                <div class="patient-info-bar glass-card">
+                    <div>
+                        <div class="patient-name" id="lv-patient-name">Loading...</div>
+                        <div class="patient-id" id="lv-patient-id"></div>
+                    </div>
+                    <div class="live-indicator" id="lv-live-indicator" style="display: none;">
+                        <span class="live-dot"></span>
+                        Live Monitoring Active
+                    </div>
+                </div>
+
+                <!-- Alert Banner -->
+                <div class="alert-banner" id="lv-alert-banner"></div>
+
+                <!-- Vitals Grid -->
+                <div class="vitals-grid-live">
+                    <!-- Heart Rate -->
+                    <div class="vital-card-live glass-card">
+                        <div class="card-icon-wrap heart">❤️</div>
+                        <div class="card-value" id="lv-heart">--</div>
+                        <div class="card-label">Heart Rate</div>
+                        <span class="card-status normal" id="lv-heart-status">--</span>
+                    </div>
+
+                    <!-- SpO2 -->
+                    <div class="vital-card-live glass-card">
+                        <div class="card-icon-wrap oxygen">🫁</div>
+                        <div class="card-value" id="lv-spo2">--</div>
+                        <div class="card-label">SpO₂ Level</div>
+                        <span class="card-status normal" id="lv-spo2-status">--</span>
+                    </div>
+
+                    <!-- Temperature -->
+                    <div class="vital-card-live glass-card">
+                        <div class="card-icon-wrap temp">🌡️</div>
+                        <div class="card-value" id="lv-temp">--</div>
+                        <div class="card-label">Temperature</div>
+                        <span class="card-status normal" id="lv-temp-status">--</span>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="vital-card-live glass-card">
+                        <div class="card-icon-wrap location">📍</div>
+                        <div class="card-value" id="lv-location" style="font-size: 1.2rem;">--</div>
+                        <div class="card-label">Location</div>
+                        <a id="lv-map-link" href="#" target="_blank" rel="noopener" class="map-link-btn"
+                            style="display: none;">
+                            🗺️ Open Map
+                        </a>
+                        <span class="card-status normal" id="lv-location-status">--</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/doctor-live-vitals.js"></script>
+</body>
+
+</html>
